@@ -142,6 +142,22 @@ document.addEventListener('DOMContentLoaded', function() {
             disconnectFromProxy();
           }
         });
+      
+        chrome.proxy.settings.get({ incognito: false }, function(config) {
+          if (
+            config &&
+            config.value &&
+            config.value.mode === 'fixed_servers' &&
+            config.value.rules &&
+            config.value.rules.singleProxy &&
+            config.value.rules.singleProxy.host === proxy.ip &&
+            parseInt(config.value.rules.singleProxy.port) === parseInt(proxy.port)
+          ) {
+            connectButton.classList.remove('btn-primary');
+            connectButton.classList.add('btn-success');
+            connectButton.textContent = 'Disconnect';
+          }
+        });
 
         deleteButton.addEventListener('click', function() {
           chrome.storage.local.get('proxies', function(data) {
