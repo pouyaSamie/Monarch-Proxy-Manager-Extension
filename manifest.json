@@ -3,7 +3,7 @@
     "manifest_version": 2,
     "name": "Monarch proxy Manager",
     "version": "1.0",
-    "permissions": ["proxy", "storage"],
+    "permissions": ["proxy", "storage","https://api.ipify.org/*"],
     "background": {
       "scripts": ["js/background.js"],
       "persistent": false

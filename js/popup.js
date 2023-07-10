@@ -3,7 +3,12 @@ document.addEventListener('DOMContentLoaded', function () {
   const proxyList = document.getElementById('proxy-list');
   const btnSave = document.getElementById('btn-save');
   const btnCollapse = document.getElementById('btn-collapse');
-  const icon = btnCollapse.querySelector('i');
+  const icon = btnCollapse.querySelector('span');
+ 
+  // Use a third-party service to get the IP address
+  ShowCurrentUserIpAddres();
+  
+
 
   btnCollapse.addEventListener('click', function () {
 
@@ -99,12 +104,14 @@ document.addEventListener('DOMContentLoaded', function () {
     }, function () {
       renderProxyList();
     });
+    ShowCurrentUserIpAddres();
   }
 
   function disconnectFromProxy() {
     chrome.proxy.settings.clear({ scope: 'regular' }, function () {
       renderProxyList();
     });
+    ShowCurrentUserIpAddres();
   }
 
   function renderProxyList() {
@@ -122,10 +129,10 @@ document.addEventListener('DOMContentLoaded', function () {
             <div>
               <button class="btn btn-primary connect-btn">Connect</button>
               <button class="btn btn-danger delete-btn" title="Delete">
-                <i class="fas fa-trash"></i>
+              <span class="icon-trash"/>
               </button>
               <button class="btn btn-secondary edit-btn" title="Edit">
-                <i class="fas fa-edit"></i>
+              <span class="icon-edit"/>
               </button>
             </div>
           </div>
@@ -197,3 +204,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
   renderProxyList();
 });
+function ShowCurrentUserIpAddres() {
+  fetch('https://api.ipify.org?format=json')
+    .then(response => response.json())
+    .then(data => {
+      document.getElementById('ip-address').textContent = `Current Ip Address: ${data.ip}`;
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      document.getElementById('ip-address').textContent = 'Failed to retrieve IP address.';
+    });
+}

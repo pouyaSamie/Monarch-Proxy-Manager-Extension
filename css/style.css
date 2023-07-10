@@ -1,10 +1,13 @@
 /* Custom Styles for Monarch Manager Extension */
+title{
+text-align: center;
 
+}
 body {
   min-width: 400px;
   min-height: 300px;
   border: 1px solid #ccc;
-  margin: 3px;
+  margin: 1px;
 }
 
 .icon-minus {
@@ -14,6 +17,7 @@ body {
     background-image: url(../icons/minus-solid.svg);
     background-repeat: no-repeat;
     background-size: cover;
+    fill: white;
   }
   
   .icon-plus {
@@ -23,6 +27,7 @@ body {
     background-image: url(../icons/plus-solid.svg);
     background-repeat: no-repeat;
     background-size: cover;
+    fill: white;
   }
   
   .icon-trash {
@@ -32,6 +37,7 @@ body {
     background-image: url(../icons/trash-solid.svg);
     background-repeat: no-repeat;
     background-size: cover;
+    fill: white;
   }
   
   .icon-edit {
@@ -41,6 +47,8 @@ body {
     background-image: url(../icons/pen-to-square-solid.svg);
     background-repeat: no-repeat;
     background-size: cover;
+
   }
-  
+
+
   
