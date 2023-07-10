@@ -1,29 +1,29 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   const form = document.getElementById('proxy-form');
   const proxyList = document.getElementById('proxy-list');
   const btnSave = document.getElementById('btn-save');
   const btnCollapse = document.getElementById('btn-collapse');
   const icon = btnCollapse.querySelector('i');
 
-  btnCollapse.addEventListener('click', function() {
-  
+  btnCollapse.addEventListener('click', function () {
+
     if (form.classList.contains("frm-visible")) {
       icon.classList.remove('fa-minus');
       icon.classList.add('fa-plus');
       form.classList.remove("frm-visible")
-      
+
     } else {
       icon.classList.remove('fa-plus');
       icon.classList.add('fa-minus');
       form.classList.add("frm-visible")
     }
-    
+
     console.log(form.dataset.show)
     form.classList.toggle('collapse');
-   
+
   });
 
-  form.addEventListener('submit', function(event) {
+  form.addEventListener('submit', function (event) {
     event.preventDefault();
 
     const nameInput = document.getElementById('name');
@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const editIndex = editIndexInput.value.trim();
 
     if (name && ip && port) {
-      chrome.storage.local.get('proxies', function(data) {
+      chrome.storage.local.get('proxies', function (data) {
         const proxies = data.proxies || [];
 
         if (editIndex) {
@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', function() {
           proxies.push(newProxy);
         }
 
-        chrome.storage.local.set({ 'proxies': proxies }, function() {
+        chrome.storage.local.set({ 'proxies': proxies }, function () {
           renderProxyList();
         });
 
@@ -73,8 +73,9 @@ document.addEventListener('DOMContentLoaded', function() {
         bypassListInput.value = '';
         editIndexInput.value = '';
         btnSave.textContent = 'Add Proxy';
-        if(form.classList.contains("frm-visible"))
-          btnCollapse.click(); 
+        if (form.classList.contains('show')) {
+          btnCollapse.click();
+        }
       });
     }
   });
@@ -95,24 +96,24 @@ document.addEventListener('DOMContentLoaded', function() {
         }
       },
       scope: 'regular'
-    }, function() {
+    }, function () {
       renderProxyList();
     });
   }
 
   function disconnectFromProxy() {
-    chrome.proxy.settings.clear({ scope: 'regular' }, function() {
+    chrome.proxy.settings.clear({ scope: 'regular' }, function () {
       renderProxyList();
     });
   }
 
   function renderProxyList() {
-    chrome.storage.local.get('proxies', function(data) {
+    chrome.storage.local.get('proxies', function (data) {
       const proxies = data.proxies || [];
 
       proxyList.innerHTML = '';
 
-      proxies.forEach(function(proxy, index) {
+      proxies.forEach(function (proxy, index) {
         const listItem = document.createElement('li');
         listItem.classList.add('list-group-item');
         listItem.innerHTML = `
@@ -130,11 +131,13 @@ document.addEventListener('DOMContentLoaded', function() {
           </div>
         `;
 
+      
+      
         const connectButton = listItem.querySelector('.connect-btn');
         const deleteButton = listItem.querySelector('.delete-btn');
         const editButton = listItem.querySelector('.edit-btn');
 
-        connectButton.addEventListener('click', function() {
+        connectButton.addEventListener('click', function () {
           if (connectButton.textContent === 'Connect') {
             disconnectFromProxy();
             connectToProxy(proxy);
@@ -142,8 +145,8 @@ document.addEventListener('DOMContentLoaded', function() {
             disconnectFromProxy();
           }
         });
-      
-        chrome.proxy.settings.get({ incognito: false }, function(config) {
+
+        chrome.proxy.settings.get({ incognito: false }, function (config) {
           if (
             config &&
             config.value &&
@@ -159,17 +162,17 @@ document.addEventListener('DOMContentLoaded', function() {
           }
         });
 
-        deleteButton.addEventListener('click', function() {
-          chrome.storage.local.get('proxies', function(data) {
+        deleteButton.addEventListener('click', function () {
+          chrome.storage.local.get('proxies', function (data) {
             const proxies = data.proxies || [];
             proxies.splice(index, 1);
-            chrome.storage.local.set({ 'proxies': proxies }, function() {
+            chrome.storage.local.set({ 'proxies': proxies }, function () {
               renderProxyList();
             });
           });
         });
 
-        editButton.addEventListener('click', function() {
+        editButton.addEventListener('click', function () {
           const nameInput = document.getElementById('name');
           const ipInput = document.getElementById('ip');
           const portInput = document.getElementById('port');
@@ -182,8 +185,9 @@ document.addEventListener('DOMContentLoaded', function() {
           bypassListInput.value = proxy.bypassList || '';
           editIndexInput.value = index;
           btnSave.textContent = 'Update Proxy';
-          if(!form.classList.contains("frm-visible"))
-            btnCollapse.click(); 
+          if (!form.classList.contains('show')) {
+            btnCollapse.click();
+          }
         });
 
         proxyList.appendChild(listItem);
