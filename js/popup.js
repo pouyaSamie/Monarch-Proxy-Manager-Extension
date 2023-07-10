@@ -57,6 +57,12 @@ document.addEventListener('DOMContentLoaded', function () {
               bypassList: bypassList
             };
           }
+
+          const isProxyConnected = isProxyConnectedToCurrent(proxies[editIndex]);
+          if (isProxyConnected) {
+            connectToProxy(proxies[editIndex]);
+          }
+
         } else {
           // Add new proxy
           const newProxy = {
@@ -71,14 +77,14 @@ document.addEventListener('DOMContentLoaded', function () {
         chrome.storage.local.set({ 'proxies': proxies }, function () {
           renderProxyList();
         });
-
+        
         nameInput.value = '';
         ipInput.value = '';
         portInput.value = '';
         bypassListInput.value = '';
         editIndexInput.value = '';
         btnSave.textContent = 'Add Proxy';
-        if (form.classList.contains('show')) {
+        if (form.classList.contains('frm-visible')) {
           btnCollapse.click();
         }
       });
@@ -87,7 +93,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function connectToProxy(proxy) {
     const bypassList = proxy.bypassList ? proxy.bypassList.split(',') : [];
-
     chrome.proxy.settings.set({
       value: {
         mode: 'fixed_servers',
@@ -114,6 +119,24 @@ document.addEventListener('DOMContentLoaded', function () {
     ShowCurrentUserIpAddres();
   }
 
+function isProxyConnectedToCurrent(proxy) {
+  // Retrieve the current Chrome proxy settings
+  chrome.proxy.settings.get({ incognito: false }, function (config) {
+    if (
+      config &&
+      config.value &&
+      config.value.mode === 'fixed_servers' &&
+      config.value.rules &&
+      config.value.rules.singleProxy &&
+      config.value.rules.singleProxy.host === proxy.ip &&
+      parseInt(config.value.rules.singleProxy.port) === parseInt(proxy.port)
+    ) {
+      return true;
+    }
+  });
+
+  return false;
+}
   function renderProxyList() {
     chrome.storage.local.get('proxies', function (data) {
       const proxies = data.proxies || [];
