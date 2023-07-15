@@ -4,28 +4,23 @@ document.addEventListener('DOMContentLoaded', function () {
   const btnSave = document.getElementById('btn-save');
   const btnCollapse = document.getElementById('btn-collapse');
   const icon = btnCollapse.querySelector('span');
- 
+
   // Use a third-party service to get the IP address
   ShowCurrentUserIpAddres();
-  
-
 
   btnCollapse.addEventListener('click', function () {
-
     if (form.classList.contains("frm-visible")) {
       icon.classList.remove('fa-minus');
       icon.classList.add('fa-plus');
-      form.classList.remove("frm-visible")
-
+      form.classList.remove("frm-visible");
     } else {
       icon.classList.remove('fa-plus');
       icon.classList.add('fa-minus');
-      form.classList.add("frm-visible")
+      form.classList.add("frm-visible");
     }
 
-    console.log(form.dataset.show)
+    console.log(form.dataset.show);
     form.classList.toggle('collapse');
-
   });
 
   form.addEventListener('submit', function (event) {
@@ -44,7 +39,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const editIndex = editIndexInput.value.trim();
 
     if (name && ip && port) {
-      chrome.storage.local.get('proxies', function (data) {
+      chrome.storage.sync.get('proxies', function (data) {
         const proxies = data.proxies || [];
 
         if (editIndex) {
@@ -74,10 +69,10 @@ document.addEventListener('DOMContentLoaded', function () {
           proxies.push(newProxy);
         }
 
-        chrome.storage.local.set({ 'proxies': proxies }, function () {
+        chrome.storage.sync.set({ 'proxies': proxies }, function () {
           renderProxyList();
         });
-        
+
         nameInput.value = '';
         ipInput.value = '';
         portInput.value = '';
@@ -119,26 +114,27 @@ document.addEventListener('DOMContentLoaded', function () {
     ShowCurrentUserIpAddres();
   }
 
-function isProxyConnectedToCurrent(proxy) {
-  // Retrieve the current Chrome proxy settings
-  chrome.proxy.settings.get({ incognito: false }, function (config) {
-    if (
-      config &&
-      config.value &&
-      config.value.mode === 'fixed_servers' &&
-      config.value.rules &&
-      config.value.rules.singleProxy &&
-      config.value.rules.singleProxy.host === proxy.ip &&
-      parseInt(config.value.rules.singleProxy.port) === parseInt(proxy.port)
-    ) {
-      return true;
-    }
-  });
+  function isProxyConnectedToCurrent(proxy) {
+    // Retrieve the current Chrome proxy settings
+    chrome.proxy.settings.get({ incognito: false }, function (config) {
+      if (
+        config &&
+        config.value &&
+        config.value.mode === 'fixed_servers' &&
+        config.value.rules &&
+        config.value.rules.singleProxy &&
+        config.value.rules.singleProxy.host === proxy.ip &&
+        parseInt(config.value.rules.singleProxy.port) === parseInt(proxy.port)
+      ) {
+        return true;
+      }
+    });
 
-  return false;
-}
+    return false;
+  }
+
   function renderProxyList() {
-    chrome.storage.local.get('proxies', function (data) {
+    chrome.storage.sync.get('proxies', function (data) {
       const proxies = data.proxies || [];
 
       proxyList.innerHTML = '';
@@ -161,8 +157,6 @@ function isProxyConnectedToCurrent(proxy) {
           </div>
         `;
 
-      
-      
         const connectButton = listItem.querySelector('.connect-btn');
         const deleteButton = listItem.querySelector('.delete-btn');
         const editButton = listItem.querySelector('.edit-btn');
@@ -193,10 +187,10 @@ function isProxyConnectedToCurrent(proxy) {
         });
 
         deleteButton.addEventListener('click', function () {
-          chrome.storage.local.get('proxies', function (data) {
+          chrome.storage.sync.get('proxies', function (data) {
             const proxies = data.proxies || [];
             proxies.splice(index, 1);
-            chrome.storage.local.set({ 'proxies': proxies }, function () {
+            chrome.storage.sync.set({ 'proxies': proxies }, function () {
               renderProxyList();
             });
           });
@@ -227,6 +221,7 @@ function isProxyConnectedToCurrent(proxy) {
 
   renderProxyList();
 });
+
 function ShowCurrentUserIpAddres() {
   fetch('https://api.ipify.org?format=json')
     .then(response => response.json())
