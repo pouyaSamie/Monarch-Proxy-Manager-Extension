@@ -23,6 +23,7 @@ document.addEventListener('DOMContentLoaded', function () {
       form.classList.add("frm-visible")
     }
 
+    console.log(form.dataset.show)
     form.classList.toggle('collapse');
 
   });
@@ -43,7 +44,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const editIndex = editIndexInput.value.trim();
 
     if (name && ip && port) {
-      browser.storage.local.get('proxies', function (data) {
+      chrome.storage.local.get('proxies', function (data) {
         const proxies = data.proxies || [];
 
         if (editIndex) {
@@ -73,7 +74,7 @@ document.addEventListener('DOMContentLoaded', function () {
           proxies.push(newProxy);
         }
 
-        browser.storage.local.set({ 'proxies': proxies }, function () {
+        chrome.storage.local.set({ 'proxies': proxies }, function () {
           renderProxyList();
         });
         
@@ -92,7 +93,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function connectToProxy(proxy) {
     const bypassList = proxy.bypassList ? proxy.bypassList.split(',') : [];
-    browser.proxy.settings.set({
+    chrome.proxy.settings.set({
       value: {
         mode: 'fixed_servers',
         rules: {
@@ -112,15 +113,15 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function disconnectFromProxy() {
-    browser.proxy.settings.clear({ scope: 'regular' }, function () {
+    chrome.proxy.settings.clear({ scope: 'regular' }, function () {
       renderProxyList();
     });
     ShowCurrentUserIpAddres();
   }
 
 function isProxyConnectedToCurrent(proxy) {
-  // Retrieve the current browser proxy settings
-  browser.proxy.settings.get({ incognito: false }, function (config) {
+  // Retrieve the current Chrome proxy settings
+  chrome.proxy.settings.get({ incognito: false }, function (config) {
     if (
       config &&
       config.value &&
@@ -137,7 +138,7 @@ function isProxyConnectedToCurrent(proxy) {
   return false;
 }
   function renderProxyList() {
-    browser.storage.local.get('proxies', function (data) {
+    chrome.storage.local.get('proxies', function (data) {
       const proxies = data.proxies || [];
 
       proxyList.innerHTML = '';
@@ -175,7 +176,7 @@ function isProxyConnectedToCurrent(proxy) {
           }
         });
 
-        browser.proxy.settings.get({ incognito: false }, function (config) {
+        chrome.proxy.settings.get({ incognito: false }, function (config) {
           if (
             config &&
             config.value &&
@@ -192,10 +193,10 @@ function isProxyConnectedToCurrent(proxy) {
         });
 
         deleteButton.addEventListener('click', function () {
-          browser.storage.local.get('proxies', function (data) {
+          chrome.storage.local.get('proxies', function (data) {
             const proxies = data.proxies || [];
             proxies.splice(index, 1);
-            browser.storage.local.set({ 'proxies': proxies }, function () {
+            chrome.storage.local.set({ 'proxies': proxies }, function () {
               renderProxyList();
             });
           });
