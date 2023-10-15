@@ -1,5 +1,8 @@
 # Monarch Proxy Manager Extension
 Simple proxy manager extension for Chrome and Edge browsers.
+you can install this extension from here:
+https://microsoftedge.microsoft.com/addons/detail/monarch-proxy-manager/dnaldcbehagiffofhgkohndaokjehifa
+
 ## Load the extension in Chrome or Edge:
 
 - Open Chrome and go to chrome://extensions.
